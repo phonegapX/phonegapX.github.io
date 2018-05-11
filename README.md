@@ -1,5 +1,9 @@
 # QuantBot 服务
 
+## 项目地址
+
+https://github.com/phonegapX/QuantBot
+
 ## 登录
 
 QuantBot运行后，打开 `http://localhost:9876`。
@@ -10,12 +14,11 @@ QuantBot运行后，打开 `http://localhost:9876`。
 
 | 交易所 | 货币类型 |
 | -------- | ----- |
-| okcoin 中国 | `BTC/CNY`, `LTC/CNY` |
-| 火币网 | `BTC/CNY`, `LTC/CNY` |
+| okex | `BTC/USDT`, `ETH/USDT`, `EOS/USDT`, `ONT/USDT`, `QTUM/USDT`, `ONT/ETH` |
+| 火币网 | `BTC/USDT`, `ETH/USDT`, `EOS/USDT`, `ONT/USDT`, `QTUM/USDT` |
+| 比特儿国际 | `BTC/USDT`, `ETH/USDT`, `EOS/USDT`, `ONT/USDT`, `QTUM/USDT` |
+| 币安 | `BTC/USDT`, `ETH/USDT`, `EOS/USDT`, `ONT/USDT`, `QTUM/USDT` |
 | poloniex | `ETH/BTC`, `XMR/BTC`, `BTC/USDT`, `LTC/BTC`, `ETC/BTC`, `XRP/BTC`, `ETH/USDT`, `ETC/ETH`, ... |
-| BTCC | `BTC/CNY`, `LTC/CNY`, `LTC/BTC` |
-| 中国比特币 | `BTC/CNY`, `LTC/CNY`, `ETH/CNY`, `ETC/CNY` |
-| okcoin 期货 | `BTC.WEEK/USD`, `BTC.WEEK2/USD`, `BTC.MONTH3/USD`, `LTC.WEEK/USD`, ... |
 | oanda.v20 | coming soon ...... |
 
 # 算法策略编写说明
@@ -59,8 +62,8 @@ QuantBot运行后，打开 `http://localhost:9876`。
 
 | 名称 | 类型 | 说明 |
 | ---- | ---- | ---- | 
-| CNY | Number | 可用的 CNY 数量 |
-| FrozenCNY | Number | 冻结的 CNY 数量 |
+| USDT | Number | 可用的 USDT 数量 |
+| FrozenUSDT | Number | 冻结的 USDT 数量 |
 | BTC | Number | 可用的 BTC 数量 |
 | FrozenBTC | Number | 冻结的 BTC 数量 |
 | LTC | Number | 可用的 LTC 数量 |
@@ -144,6 +147,15 @@ G.Sleep(5000);
 G.Log("I'm running…");
 ```
 
+### Console
+
+> G.Console(Message: *Any*) => *No Return*
+
+```javascript
+// 向控制台发送打印信息
+G.Console("I'm running…");
+```
+
 ### LogProfit
 
 > G.LogProfit(Profit: *Number*, Message: *Any*) => *No Return*
@@ -164,7 +176,15 @@ G.LogStatus('Latest BTC Ticker: ', E.GetTicker('BTC/USD'));
 
 ### AddTask
 
-> G.AddTask(Function: *Function*, Arguments: *Any*) => *Boolean*
+> G.AddTask(group: *String*, FunctionName: *String*, Arguments: *Any*) => *Boolean*
+
+```javascript
+// 和 G.ExecTasks() 配合使用
+```
+
+### BindTaskParam
+
+> G.BindTaskParam(group: *String*, FunctionName: *String*, Arguments: *Any*) => *Boolean*
 
 ```javascript
 // 和 G.ExecTasks() 配合使用
@@ -172,17 +192,21 @@ G.LogStatus('Latest BTC Ticker: ', E.GetTicker('BTC/USD'));
 
 ### ExecTasks
 
-> G.ExecTasks() => *List*
+> G.ExecTasks(group: *String*) => *List*
 
 ```javascript
 // 添加几个任务到任务列表里面
-G.AddTask(E.GetAccount);
-G.AddTask(E.GetTicker, 'BTC/USD');
+G.AddTask("myGroup", "function1");
+G.AddTask("myGroup", "function2", 'param1');
 
-// 执行任务列表里面的所有数据并返回所有的执行结果
-var results = G.ExecTasks();
-var thisAccount = results[0];
-var thisTicker = results[1];
+// 可以随时为函数绑定新的参数
+G.BindTaskParam("myGroup", "function1", 'param1');
+G.BindTaskParam("myGroup", "function2", 'param2', 'param3');
+
+// 执行一组任务列表里面的所有数据并返回所有的执行结果
+var results = G.ExecTasks("myGroup");
+var r1 = results[0];
+var r2 = results[1];
 ```
 
 ## Exchange/E
